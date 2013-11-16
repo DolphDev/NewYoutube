@@ -1,0 +1,23 @@
+@(form: Form[Login.LoginForm], user: User)
+
+@main("Log In", user) {
+    @helper.form(routes.Login.authenticate) {
+        @if(form.hasGlobalErrors) {
+            <div class="alert alert-danger">
+                @form.globalError.message
+            </div>
+        }
+
+        <div class="form-group">
+            <label for="usernameInput">Username:</label>
+            <input type="text" class="form-control" name="username" placeholder="Username" value="@form("username").value">
+        </div>
+
+        <div class="form-group">
+            <label for="usernameInput">Password:</label>
+            <input type="password" class="form-control" name="password" placeholder="Password">
+        </div>
+
+        <input type="submit" class="btn btn-default">
+    }
+}

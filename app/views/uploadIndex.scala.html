@@ -1,0 +1,24 @@
+@(user: User)
+
+@main("Upload", user) {
+    <h1>Upload Video</h1>
+    <form action="/upload" method="PUT">
+        <div class="form-group">
+            <label for="titleInput">Title</label>
+            <input name="title" type="text" class="form-control" id="titleInput" placeholder="My Cool New Video">
+        </div>
+        <div class="form-group">
+            <label for="descInput">Description</label>
+            <textarea name="desc" class="form-control" id="descArea" placeholder="Take a look at this new cool video, starring me and my friend Jack!"></textarea>
+        </div>
+        <div class="form-group">
+            <div class="fileinput fileinput-new" data-provides="fileinput">
+                <div class="input-group">
+                    <div class="form-control uneditable-input span3" data-trigger="fileinput"><i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div>
+                    <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" id="fileInput" name="..."></span>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-default">Upload!</button>
+    </form>
+}
