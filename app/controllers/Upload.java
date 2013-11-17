@@ -29,6 +29,9 @@ public class Upload extends Controller {
             String fileName = videoFile.getFilename();
             String contentType = videoFile.getContentType();
             File file = videoFile.getFile();
+            File newFile = new File(file.getParentFile(), fileName);
+            file.renameTo(newFile);
+            file = newFile;
 
             String title = body.asFormUrlEncoded().get("title")[0];
             String desc = body.asFormUrlEncoded().get("desc")[0];
@@ -37,7 +40,7 @@ public class Upload extends Controller {
 
             VideoFile vf = new VideoFile();
             vf.codecs = new HashSet<>();
-            vf.link = file.getAbsolutePath();
+            vf.link = "file:///" + file.getAbsolutePath();
             vf.mimetype = contentType;
 
             Set<VideoFile> vfs = new HashSet<>();
