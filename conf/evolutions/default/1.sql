@@ -36,6 +36,7 @@ create table video (
   likes                     integer,
   dislikes                  integer,
   uploaded                  timestamp,
+  views                     bigint,
   uploader_id               integer,
   thumbnail_link            varchar(255),
   constraint pk_video primary key (id))

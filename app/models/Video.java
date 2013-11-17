@@ -9,28 +9,31 @@ import java.util.Set;
 @Entity
 public class Video extends Model {
     @Id
-    String id;
+    public String id;
 
-    String title;
-    String description;
-    Integer likes;
-    Integer dislikes;
+    public String title;
+    public String description;
+    public Integer likes = 0;
+    public Integer dislikes = 0;
 
-    Date uploaded;
+    public Date uploaded = new Date();
+
+    public Long views = 0L;
 
     @ManyToOne
-    User uploader;
+    public User uploader;
 
-    String thumbnailLink;
+    public String thumbnailLink;
 
     @ManyToMany(mappedBy = "videos")
-    Set<Tag> tags;
+    public Set<Tag> tags;
 
     @OneToMany(mappedBy = "video")
-    Set<Comment> comments;
+    @OrderBy("posted DESC")
+    public Set<Comment> comments;
 
     @OneToMany(mappedBy = "video")
-    Set<VideoFile> videoFiles;
+    public Set<VideoFile> videoFiles;
 
     public static Model.Finder<String, Video> find = new Model.Finder(String.class, Video.class);
 
@@ -41,6 +44,7 @@ public class Video extends Model {
         }
         t.videos.add(this);
         t.save();
+        tags.add(t);
         return t;
     }
 
@@ -52,6 +56,8 @@ public class Video extends Model {
         v.videoFiles = files;
         v.uploaded = new Date();
         v.save();
+
+        uploader.videos.add(v);
         return v;
     }
 

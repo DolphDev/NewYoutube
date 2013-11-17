@@ -1,6 +1,7 @@
 @(form: Form[Login.LoginForm], user: User)
 
 @main("Log In", user) {
+    <h1>Log In</h1>
     @helper.form(routes.Login.authenticate) {
         @if(form.hasGlobalErrors) {
             <div class="alert alert-danger">

@@ -10,20 +10,20 @@ import java.util.Date;
 @Entity
 public class Comment extends Model {
     @Id
-    Integer id;
+    public Integer id;
 
-    String content;
+    public String content;
 
-    Integer likes;
-    Integer dislikes;
+    public Integer likes;
+    public Integer dislikes;
 
-    Date posted;
-
-    @ManyToOne
-    User author;
+    public Date posted;
 
     @ManyToOne
-    Video video;
+    public User author;
+
+    @ManyToOne
+    public Video video;
 
     public static Model.Finder<Integer, Comment> find = new Model.Finder(Integer.class, Comment.class);
 

@@ -39,9 +39,10 @@ public class Utils {
         return matcher.matches();
     }
 
-    public static User getUserOrNull(Request req) {
-        if (req.username() != null) {
-            User u = User.find.where().eq("username", req.username()).findUnique();
+    public static User getUserOrNull(String name) {
+        System.out.println();
+        if (name != null) {
+            User u = User.find.where().eq("username", name).findUnique();
             return u;
         } else {
             return null;

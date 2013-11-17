@@ -1,31 +1,57 @@
 package controllers;
 
-import org.apache.commons.lang3.StringUtils;
+import models.User;
+import models.Video;
+import models.VideoFile;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
 import utils.Utils;
-import views.html.*;
+import views.html.upload;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Map;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Upload extends Controller {
-    public static Result uploadIndex() {
-        return ok(uploadIndex.render(Utils.getUserOrNull(request())));
+    @Security.Authenticated(Secured.class)
+    public static Result upload() {
+        return ok(upload.render(Utils.getUserOrNull(session("username"))));
     }
 
-    public static Result uploadFile() {
-        Map<String, String[]> formData = request().body().asFormUrlEncoded();
+    @Security.Authenticated(Secured.class)
+    public static Result uploadDo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart videoFile = body.getFile("file");
 
-        try {
-            String title = URLDecoder.decode(StringUtils.join(formData.get("title")), "UTF-8");
-            String desc = URLDecoder.decode(StringUtils.join(formData.get("description")), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (videoFile != null) {
+            String fileName = videoFile.getFilename();
+            String contentType = videoFile.getContentType();
+            File file = videoFile.getFile();
+
+            String title = body.asFormUrlEncoded().get("title")[0];
+            String desc = body.asFormUrlEncoded().get("desc")[0];
+
+            User u = Utils.getUserOrNull(session("username"));
+
+            VideoFile vf = new VideoFile();
+            vf.codecs = new HashSet<>();
+            vf.link = file.getAbsolutePath();
+            vf.mimetype = contentType;
+
+            Set<VideoFile> vfs = new HashSet<>();
+            vfs.add(vf);
+
+            Video v = Video.upload(title, desc, u, vfs);
+            vf.video = v;
+            vf.save();
+            v.save();
+
+            return ok(v.id);
+        } else {
+            flash("error", "You did not choose a file!");
+            return badRequest(upload.render(Utils.getUserOrNull(session("username"))));
         }
-
-        return redirect(routes.Application.index());
-        //TODO: Make uploading
     }
 }

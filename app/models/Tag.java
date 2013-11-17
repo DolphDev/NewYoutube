@@ -10,10 +10,10 @@ import java.util.Set;
 @Entity
 public class Tag extends Model {
     @Id
-    String name;
+    public String name;
 
     @ManyToMany
-    Set<Video> videos;
+    public Set<Video> videos;
 
     public static Model.Finder<String, Tag> find = new Model.Finder(String.class, Tag.class);
 

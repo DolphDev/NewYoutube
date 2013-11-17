@@ -10,14 +10,14 @@ import java.util.Set;
 @Entity
 public class VideoFile extends Model {
     @Id
-    Integer id;
+    public Integer id;
 
-    String link;
-    String mimetype;
-    Set<String> codecs;
+    public String link;
+    public String mimetype;
+    public Set<String> codecs;
 
     @ManyToOne
-    Video video;
+    public Video video;
 
     public static Model.Finder<Integer, VideoFile> find = new Model.Finder(Integer.class, VideoFile.class);
 }

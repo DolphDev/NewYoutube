@@ -1,5 +1,45 @@
 @(video: Video, user: User)
 
 @main("View Video", user) {
-    Lorem Ipsum Dolor Sit Amet
+
+    <center>
+        <h2>@video.title</h2>
+
+        <video width="854" height="480" controls id="video">
+            @for(vf <- video.videoFiles) {
+                <source src="@vf.link" type="@vf.mimetype">
+            }
+            Sorry! Your browser does not support the &lt;video&gt; tag! Therefore, you cannot use this website.
+            Please get a better browser, like <a href="http://getfirefox.com">Firefox</a> or <a href="https://www.google.com/intl/en/chrome/browser/">Chrome</a>.
+        </video>
+    </center>
+
+    <hr>
+
+    <div class="col-md-6 description">
+        @video.description
+    </div>
+    <div class="col-md-5 info">
+        <span class="text-primary">Posted by @video.uploader.username at @video.uploaded.format("MMMM dd yyyy - HH:mm:ss")</span>
+        <h3>Views: @video.views</h3>
+        <p>
+            Tags:
+            @for(tag <- video.tags) {
+                @tag.name
+            }
+        </p>
+    </div>
+
+    <div class="comments">
+        @for(comment <- video.comments) {
+            <span>
+                Posted by @comment.author.username
+                ( <span class="text-success">@comment.likes</span>
+                | <span class="text-danger">@comment.dislikes</span> )
+            </span>
+            <p>
+                @comment.content
+            </p>
+        }
+    </div>
 }

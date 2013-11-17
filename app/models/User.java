@@ -14,38 +14,38 @@ import java.util.Set;
 @Entity
 public class User extends Model {
     @Id
-    Integer id;
+    public Integer id;
 
-    String username;
-    String password;
-    String email;
+    public String username;
+    public String password;
+    public String email;
 
-    String customCss;
+    public String customCss;
 
-    Date created;
+    public Date created;
 
-    Set<User> subscriptions;
+    public Set<User> subscriptions;
 
-    Set<User> subscribers;
+    public Set<User> subscribers;
 
     @OneToMany(mappedBy = "uploader")
-    Set<Video> videos;
+    public Set<Video> videos;
 
     @OneToMany(mappedBy = "author")
-    Set<Comment> comments;
+    public Set<Comment> comments;
 
 
     @OneToMany
-    Set<Video> likedVideos;
+    public Set<Video> likedVideos;
 
     @OneToMany
-    Set<Video> dislikedVideos;
+    public Set<Video> dislikedVideos;
 
     @OneToMany
-    Set<Comment> likedComments;
+    public Set<Comment> likedComments;
 
     @OneToMany
-    Set<Comment> dislikedComments;
+    public Set<Comment> dislikedComments;
 
     public static User signUp(String email, String username, String password) {
         User u = new User();

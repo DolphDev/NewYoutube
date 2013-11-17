@@ -1,27 +1,25 @@
 package controllers;
 
 import models.User;
-import play.*;
 import play.data.Form;
 import play.data.validation.Constraints;
-import play.mvc.*;
-
-import static play.data.Form.*;
-
+import play.mvc.Controller;
+import play.mvc.Result;
 import utils.Utils;
-import views.html.*;
+import views.html.login;
+import views.html.signup;
 
-import javax.validation.Constraint;
+import static play.data.Form.form;
 
 public class Login extends Controller {
     public static Result login() {
-        return ok(login.render(form(LoginForm.class), Utils.getUserOrNull(request())));
+        return ok(login.render(form(LoginForm.class), Utils.getUserOrNull(session("username"))));
     }
 
     public static Result authenticate() {
         Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
         if (loginForm.hasErrors()) {
-            return badRequest(login.render(loginForm, Utils.getUserOrNull(request())));
+            return badRequest(login.render(loginForm, Utils.getUserOrNull(session("username"))));
         } else {
             session().clear();
             session("username", loginForm.get().username);
@@ -36,13 +34,13 @@ public class Login extends Controller {
     }
 
     public static Result signup() {
-        return ok(signup.render(form(SignUpForm.class), Utils.getUserOrNull(request())));
+        return ok(signup.render(form(SignUpForm.class), Utils.getUserOrNull(session("username"))));
     }
 
     public static Result signupDo() {
         Form<SignUpForm> signupForm = form(SignUpForm.class).bindFromRequest();
         if (signupForm.hasErrors()) {
-            return badRequest(signup.render(signupForm, Utils.getUserOrNull(request())));
+            return badRequest(signup.render(signupForm, Utils.getUserOrNull(session("username"))));
         } else {
             User.signUp(signupForm.get().email, signupForm.get().username, signupForm.get().password);
             flash("success", "You have now been signed up! Now, log in with your credentials.");
@@ -59,7 +57,7 @@ public class Login extends Controller {
                 return "Username must not be blank";
             }
             if (password == "") {
-                return "Username must not be blank";
+                return "Password must not be blank";
             }
             if (User.authenticate(username, password) == null) {
                 return "Invalid user or password";
@@ -80,7 +78,6 @@ public class Login extends Controller {
         public String email;
 
         public String validate() {
-            System.out.println(username);
             if (username == "") {
                 return "Username must not be blank";
             }
@@ -88,7 +85,7 @@ public class Login extends Controller {
                 return "Password must not be blank";
             }
             if (email == "") {
-                return "Username must not be blank";
+                return "E-mail must not be blank";
             }
             if (password.length() < 8) {
                 return "Password must be longer than 8 characters";
