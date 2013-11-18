@@ -1,13 +1,12 @@
 package models;
 
-import org.h2.util.StringUtils;
 import play.db.ebean.Model;
 import utils.Utils;
 
-import javax.persistence.*;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.util.Date;
 import java.util.Set;
 
@@ -34,17 +33,16 @@ public class User extends Model {
     @OneToMany(mappedBy = "author")
     public Set<Comment> comments;
 
-
-    @OneToMany
+    @ManyToMany
     public Set<Video> likedVideos;
 
-    @OneToMany
+    @ManyToMany
     public Set<Video> dislikedVideos;
 
-    @OneToMany
+    @ManyToMany
     public Set<Comment> likedComments;
 
-    @OneToMany
+    @ManyToMany
     public Set<Comment> dislikedComments;
 
     public static User signUp(String email, String username, String password) {
@@ -66,6 +64,7 @@ public class User extends Model {
     }
 
     public void likeVideo(Video vid) {
+        System.out.println(likedVideos.size());
         if (!likedVideos.contains(vid)) {
             vid.likes++;
             likedVideos.add(vid);
@@ -74,17 +73,19 @@ public class User extends Model {
             vid.dislikes--;
             dislikedVideos.remove(vid);
         }
+        vid.save();
     }
 
     public void dislikeVideo(Video vid) {
         if (!dislikedVideos.contains(vid)) {
             vid.dislikes++;
-            likedVideos.add(vid);
+            dislikedVideos.add(vid);
         }
         if (likedVideos.contains(vid)) {
             vid.likes--;
             likedVideos.remove(vid);
         }
+        vid.save();
     }
 
     public void likeComment(Comment com) {

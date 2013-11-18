@@ -4,6 +4,8 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,14 +28,20 @@ public class Video extends Model {
     public String thumbnailLink;
 
     @ManyToMany(mappedBy = "videos")
-    public Set<Tag> tags;
+    public Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "video")
     @OrderBy("posted DESC")
-    public Set<Comment> comments;
+    public Set<Comment> comments = new HashSet<>();
 
     @OneToMany(mappedBy = "video")
-    public Set<VideoFile> videoFiles;
+    public Set<VideoFile> videoFiles = new HashSet<>();
+
+    @ManyToMany
+    public List<User> likedBy;
+
+    @ManyToMany
+    public List<User> dislikedBy;
 
     public static Model.Finder<String, Video> find = new Model.Finder(String.class, Video.class);
 

@@ -18,6 +18,9 @@ POST        /upload              controllers.Upload.uploadDo()
 
 GET         /watch/*id           controllers.Watch.watch(id: String)
 
+GET         /likevideo/*id       controllers.Watch.likeVideo(id: String)
+GET         /dislikevideo/*id    controllers.Watch.dislikeVideo(id: String)
+
 GET         /404                 controllers.FourOhFour.fourOhFour()
 
 # Map static resources from the /public folder to the /assets URL path

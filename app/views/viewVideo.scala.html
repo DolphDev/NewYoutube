@@ -1,7 +1,8 @@
 @(video: Video, user: User)
 
 @main("View Video", user) {
-
+    <span style="display: hidden" class="video-id">@video.id</span>
+    <script src="@routes.Assets.at("javascripts/viewvideo.js")"></script>
     <center>
         <h2>@video.title</h2>
 
@@ -20,6 +21,22 @@
         @video.description
     </div>
     <div class="col-md-5 info">
+        @if(user != null) {
+            <div class="btn-group">
+                <button type="button" class="like-btn btn btn-success">Like</button>
+                <button type="button" class="dislike-btn btn btn-danger">Dislike</button>
+            </div>
+        }
+        <div class="progress">
+            @defining(Math.round(video.dislikes*100f / ((video.likes + video.dislikes) + 2))) { perc =>
+                <div class="progress-bar progress-bar-success" style="width: @perc%">
+                    <div class="likes-text">Likes: @video.likes</div>
+                </div>
+                <div class="progress-bar progress-bar-danger" style="width: @(99-perc)%">
+                    <div class="dislikes-text">Dislikes: @video.dislikes</div>
+                </div>
+            }
+        </div>
         <span class="text-primary">Posted by @video.uploader.username at @video.uploaded.format("MMMM dd yyyy - HH:mm:ss")</span>
         <h3>Views: @video.views</h3>
         <p>

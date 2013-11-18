@@ -4,8 +4,10 @@ import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Comment extends Model {
@@ -24,6 +26,12 @@ public class Comment extends Model {
 
     @ManyToOne
     public Video video;
+
+    @ManyToMany
+    public List<User> likedBy;
+
+    @ManyToMany
+    public List<User> dislikedBy;
 
     public static Model.Finder<Integer, Comment> find = new Model.Finder(Integer.class, Comment.class);
 

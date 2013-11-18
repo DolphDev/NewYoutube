@@ -1,8 +1,10 @@
 package controllers;
 
+import models.User;
 import models.Video;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 import utils.Utils;
 import views.html.upload;
 import views.html.viewVideo;
@@ -23,5 +25,27 @@ public class Watch extends Controller {
         return ok(viewVideo.render(v, Utils.getUserOrNull(session("username"))));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result likeVideo(String id) {
+        Video v = Video.find.byId(id);
+        if (v == null) {
+            return redirect(routes.FourOhFour.fourOhFour());
+        }
+        User u = Utils.getUserOrNull(session("username"));
 
+        u.likeVideo(v);
+        return ok();
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result dislikeVideo(String id) {
+        Video v = Video.find.byId(id);
+        if (v == null) {
+            return redirect(routes.FourOhFour.fourOhFour());
+        }
+        User u = Utils.getUserOrNull(session("username"));
+
+        u.dislikeVideo(v);
+        return ok();
+    }
 }

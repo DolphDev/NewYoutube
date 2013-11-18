@@ -36,6 +36,13 @@ public class Upload extends Controller {
             String title = body.asFormUrlEncoded().get("title")[0];
             String desc = body.asFormUrlEncoded().get("desc")[0];
 
+            if (title.equals("")) {
+                return badRequest("Title must not be blank!");
+            }
+            if (desc.equals("")) {
+                return badRequest("Description must not be blank!");
+            }
+
             User u = Utils.getUserOrNull(session("username"));
 
             VideoFile vf = new VideoFile();
@@ -50,7 +57,6 @@ public class Upload extends Controller {
             vf.video = v;
             vf.save();
             v.save();
-
             return ok(v.id);
         } else {
             flash("error", "You did not choose a file!");

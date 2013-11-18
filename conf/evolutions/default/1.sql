@@ -51,10 +51,34 @@ create table video_file (
 ;
 
 
+create table comment_user (
+  comment_id                     integer not null,
+  user_id                        integer not null,
+  constraint pk_comment_user primary key (comment_id, user_id))
+;
+
 create table tag_video (
   tag_name                       varchar(255) not null,
   video_id                       varchar(255) not null,
   constraint pk_tag_video primary key (tag_name, video_id))
+;
+
+create table user_video (
+  user_id                        integer not null,
+  video_id                       varchar(255) not null,
+  constraint pk_user_video primary key (user_id, video_id))
+;
+
+create table user_comment (
+  user_id                        integer not null,
+  comment_id                     integer not null,
+  constraint pk_user_comment primary key (user_id, comment_id))
+;
+
+create table video_user (
+  video_id                       varchar(255) not null,
+  user_id                        integer not null,
+  constraint pk_video_user primary key (video_id, user_id))
 ;
 create sequence comment_seq;
 
@@ -77,9 +101,25 @@ create index ix_video_file_video_4 on video_file (video_id);
 
 
 
+alter table comment_user add constraint fk_comment_user_comment_01 foreign key (comment_id) references comment (id) on delete restrict on update restrict;
+
+alter table comment_user add constraint fk_comment_user_user_02 foreign key (user_id) references user (id) on delete restrict on update restrict;
+
 alter table tag_video add constraint fk_tag_video_tag_01 foreign key (tag_name) references tag (name) on delete restrict on update restrict;
 
 alter table tag_video add constraint fk_tag_video_video_02 foreign key (video_id) references video (id) on delete restrict on update restrict;
+
+alter table user_video add constraint fk_user_video_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
+
+alter table user_video add constraint fk_user_video_video_02 foreign key (video_id) references video (id) on delete restrict on update restrict;
+
+alter table user_comment add constraint fk_user_comment_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
+
+alter table user_comment add constraint fk_user_comment_comment_02 foreign key (comment_id) references comment (id) on delete restrict on update restrict;
+
+alter table video_user add constraint fk_video_user_video_01 foreign key (video_id) references video (id) on delete restrict on update restrict;
+
+alter table video_user add constraint fk_video_user_user_02 foreign key (user_id) references user (id) on delete restrict on update restrict;
 
 # --- !Downs
 
@@ -87,13 +127,21 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists comment;
 
+drop table if exists comment_user;
+
 drop table if exists tag;
 
 drop table if exists tag_video;
 
 drop table if exists user;
 
+drop table if exists user_video;
+
+drop table if exists user_comment;
+
 drop table if exists video;
+
+drop table if exists video_user;
 
 drop table if exists video_file;
 
