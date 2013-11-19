@@ -6,8 +6,8 @@ import models.VideoFile;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 import utils.Utils;
+import views.html.login;
 import views.html.upload;
 
 import java.io.File;
@@ -15,13 +15,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Upload extends Controller {
-    @Security.Authenticated(Secured.class)
     public static Result upload() {
-        return ok(upload.render(Utils.getUserOrNull(session("username"))));
+        if (Utils.getUserByRequest(request()) == null) {
+            flash("error", "You are not logged in! Log in now.");
+            return unauthorized(login.render(Utils.getUserByRequest(request())));
+        }
+        return ok(upload.render(Utils.getUserByRequest(request())));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result uploadDo() {
+        // Primarily accessed via AJAX
+        if (Utils.getUserByRequest(request()) == null) {
+            return unauthorized("Not logged in");
+        }
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart videoFile = body.getFile("file");
 
@@ -43,7 +49,7 @@ public class Upload extends Controller {
                 return badRequest("Description must not be blank!");
             }
 
-            User u = Utils.getUserOrNull(session("username"));
+            User u = Utils.getUserByRequest(request());
 
             VideoFile vf = new VideoFile();
             vf.codecs = new HashSet<>();
@@ -60,7 +66,7 @@ public class Upload extends Controller {
             return ok(v.id);
         } else {
             flash("error", "You did not choose a file!");
-            return badRequest(upload.render(Utils.getUserOrNull(session("username"))));
+            return badRequest(upload.render(Utils.getUserByRequest(request())));
         }
     }
 }

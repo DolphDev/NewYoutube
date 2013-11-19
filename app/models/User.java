@@ -27,6 +27,8 @@ public class User extends Model {
 
     public Set<User> subscribers;
 
+    public String sessionKey;
+
     @OneToMany(mappedBy = "uploader")
     public Set<Video> videos;
 
@@ -44,6 +46,13 @@ public class User extends Model {
 
     @ManyToMany
     public Set<Comment> dislikedComments;
+
+    public static User getBySessionKey(String sessKey) {
+        if (sessKey == null) {
+            return null;
+        }
+        return User.find.where().eq("sessionKey", sessKey).findUnique();
+    }
 
     public static User signUp(String email, String username, String password) {
         User u = new User();

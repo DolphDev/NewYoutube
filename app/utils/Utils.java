@@ -2,7 +2,10 @@ package utils;
 
 import models.User;
 import org.h2.util.StringUtils;
+import play.mvc.Http;
 import play.mvc.Http.Request;
+import play.mvc.Result;
+import play.mvc.Results;
 import views.html.index;
 
 import java.io.UnsupportedEncodingException;
@@ -39,13 +42,16 @@ public class Utils {
         return matcher.matches();
     }
 
-    public static User getUserOrNull(String name) {
-        System.out.println();
-        if (name != null) {
-            User u = User.find.where().eq("username", name).findUnique();
-            return u;
-        } else {
+    public static String getSessionKey(Request request) {
+        Http.Cookie cookie = request.cookie("session-key");
+        if (cookie == null) {
             return null;
+        } else {
+            return cookie.value();
         }
+    }
+
+    public static User getUserByRequest(Request request) {
+        return User.getBySessionKey(Utils.getSessionKey(request));
     }
 }

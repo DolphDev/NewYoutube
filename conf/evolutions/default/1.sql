@@ -26,6 +26,7 @@ create table user (
   email                     varchar(255),
   custom_css                varchar(255),
   created                   timestamp,
+  session_key               varchar(255),
   constraint pk_user primary key (id))
 ;
 

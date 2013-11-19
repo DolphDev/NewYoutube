@@ -1,6 +1,7 @@
 package controllers;
 
 import models.User;
+import org.apache.commons.lang3.RandomStringUtils;
 import play.data.Form;
 import play.data.validation.Constraints;
 import play.mvc.Controller;
@@ -9,21 +10,38 @@ import utils.Utils;
 import views.html.login;
 import views.html.signup;
 
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import static play.data.Form.form;
 
 public class Login extends Controller {
     public static Result login() {
-        return ok(login.render(form(LoginForm.class), Utils.getUserOrNull(session("username"))));
+        return ok(login.render(Utils.getUserByRequest(request())));
     }
 
     public static Result authenticate() {
-        Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
-        if (loginForm.hasErrors()) {
-            return badRequest(login.render(loginForm, Utils.getUserOrNull(session("username"))));
-        } else {
-            session().clear();
-            session("username", loginForm.get().username);
+        Map<String, String[]> data = request().body().asFormUrlEncoded();
+
+        if (!(data.containsKey("username") && !data.get("username")[0].equals(""))) {
+            flash("error", "You did not specify a username!");
+            return badRequest(login.render(Utils.getUserByRequest(request())));
+        } else if (!(data.containsKey("password") && !data.get("password")[0].equals(""))) {
+            flash("error", "You did not specify a password!");
+            return badRequest(login.render(Utils.getUserByRequest(request())));
+        }
+
+        User u = User.authenticate(data.get("username")[0], data.get("password")[0]);
+
+        if (u != null) {
+            String sess = RandomStringUtils.random(32, true, true);
+            response().setCookie("session-key", sess);
+            u.sessionKey = sess;
+            u.save();
             return redirect(routes.Application.index());
+        } else {
+            flash("error", "Invalid user or password!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
         }
     }
 
@@ -34,66 +52,29 @@ public class Login extends Controller {
     }
 
     public static Result signup() {
-        return ok(signup.render(form(SignUpForm.class), Utils.getUserOrNull(session("username"))));
+        return ok(signup.render(Utils.getUserByRequest(request())));
     }
 
     public static Result signupDo() {
-        Form<SignUpForm> signupForm = form(SignUpForm.class).bindFromRequest();
-        if (signupForm.hasErrors()) {
-            return badRequest(signup.render(signupForm, Utils.getUserOrNull(session("username"))));
-        } else {
-            User.signUp(signupForm.get().email, signupForm.get().username, signupForm.get().password);
-            flash("success", "You have now been signed up! Now, log in with your credentials.");
-            return redirect(routes.Login.login());
+        Map<String, String[]> data = request().body().asFormUrlEncoded();
+        if (!(data.containsKey("username") && !data.get("username")[0].equals(""))) {
+            flash("error", "You did not specify a username!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
+        } else if (!(data.containsKey("password") && !data.get("password")[0].equals(""))) {
+            flash("error", "You did not specify a password!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
+        } else if (!(data.containsKey("email") && !data.get("email")[0].equals(""))) {
+            flash("error", "You did not specify an e-mail!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
+        } else if (data.get("password")[0].length() < 7) {
+            flash("error", "Password must be seven (7) characters or longer!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
+        } else if (!Pattern.compile("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$").matcher(data.get("email")[0]).matches()) {
+            flash("error", "That e-mail is invalid!");
+            return badRequest(signup.render(Utils.getUserByRequest(request())));
         }
-    }
-
-    public static class LoginForm {
-        public String username;
-        public String password;
-
-        public String validate() {
-            if (username == "") {
-                return "Username must not be blank";
-            }
-            if (password == "") {
-                return "Password must not be blank";
-            }
-            if (User.authenticate(username, password) == null) {
-                return "Invalid user or password";
-            }
-            return null;
-        }
-    }
-
-    public static class SignUpForm {
-        @Constraints.Required
-        public String username;
-
-        @Constraints.Required
-        public String password;
-
-        @Constraints.Required
-        @Constraints.Email
-        public String email;
-
-        public String validate() {
-            if (username == "") {
-                return "Username must not be blank";
-            }
-            if (password == "") {
-                return "Password must not be blank";
-            }
-            if (email == "") {
-                return "E-mail must not be blank";
-            }
-            if (password.length() < 8) {
-                return "Password must be longer than 8 characters";
-            }
-            if (User.find.where().eq("username", username).findUnique() != null) {
-                return "That user already exists!";
-            }
-            return null;
-        }
+        User.signUp(data.get("email")[0], data.get("username")[0], data.get("password")[0]);
+        flash("success", "You have been signed up!");
+        return redirect(routes.Application.index());
     }
 }

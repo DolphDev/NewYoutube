@@ -9,7 +9,7 @@ import views.html.*;
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(index.render(Utils.getUserOrNull(session("username"))));
+        return ok(index.render(Utils.getUserByRequest(request())));
     }
 
 }

@@ -1,17 +1,11 @@
-@(form: Form[Login.LoginForm], user: User)
+@(user: User)
 
 @main("Log In", user) {
     <h1>Log In</h1>
     @helper.form(routes.Login.authenticate) {
-        @if(form.hasGlobalErrors) {
-            <div class="alert alert-danger">
-                @form.globalError.message
-            </div>
-        }
-
         <div class="form-group">
             <label for="usernameInput">Username:</label>
-            <input type="text" class="form-control" name="username" placeholder="Username" value="@form("username").value">
+            <input type="text" class="form-control" name="username" placeholder="Username">
         </div>
 
         <div class="form-group">

@@ -22,28 +22,34 @@ public class Watch extends Controller {
         v.views++;
         v.save();
 
-        return ok(viewVideo.render(v, Utils.getUserOrNull(session("username"))));
+        return ok(viewVideo.render(v, Utils.getUserByRequest(request())));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result likeVideo(String id) {
+        // Primarily accessed via AJAX
+        if (Utils.getUserByRequest(request()) == null) {
+            return unauthorized("Not logged in");
+        }
         Video v = Video.find.byId(id);
         if (v == null) {
             return redirect(routes.FourOhFour.fourOhFour());
         }
-        User u = Utils.getUserOrNull(session("username"));
+        User u = Utils.getUserByRequest(request());
 
         u.likeVideo(v);
         return ok();
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result dislikeVideo(String id) {
+        // Primarily accessed via AJAX
+        if (Utils.getUserByRequest(request()) == null) {
+            return unauthorized("Not logged in");
+        }
         Video v = Video.find.byId(id);
         if (v == null) {
             return redirect(routes.FourOhFour.fourOhFour());
         }
-        User u = Utils.getUserOrNull(session("username"));
+        User u = Utils.getUserByRequest(request());
 
         u.dislikeVideo(v);
         return ok();

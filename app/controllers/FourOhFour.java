@@ -7,6 +7,6 @@ import views.html.notfound;
 
 public class FourOhFour extends Controller {
     public static Result fourOhFour() {
-        return notFound(notfound.render(Utils.getUserOrNull(session("username"))));
+        return notFound(notfound.render(Utils.getUserByRequest(request())));
     }
 }
